@@ -1,0 +1,41 @@
+.btn {
+  display: block;
+  font-size: 18px;
+  border: 2px solid gray;
+  border-radius: 100px;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+  position: relative;
+}
+
+
+#btndiv
+{
+    top: 0px;
+    left: 10px;
+    position: absolute;
+}
+#btndiv2{
+    top: 200px;
+    left: 10px;
+    position: absolute;
+}
+.btn2 {
+  display: block;
+  font-size: 18px;
+  border: 2px solid blueviolet;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+  position: relative;
+  
+}
+
+
+
+
+
+

@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+
+
+<html>
+    <head>
+        <style>
+            #gameDiv{
+              width: 1200px;
+              position: absolute;
+              top:100px;
+              left:0px;
+              border-right: 2px solid red;
+                
+            }
+            .btn {
+                display: block;
+                font-size: 18px;
+                border: 2px solid gray;
+                border-radius: 100px;
+                width: 100px;
+                height: 100px;
+                text-align: center;
+                line-height: 100px;
+                position: relative;
+            }
+
+            #btndiv
+            {
+                top: 0px;
+                left: 10px;
+                position: absolute;
+            }
+            #btndiv2{
+                top: 200px;
+                left: 10px;
+                position: absolute;
+            }
+            .btn2 {
+                display: block;
+                font-size: 18px;
+                border: 2px solid blueviolet;
+                width: 100px;
+                height: 100px;
+                text-align: center;
+                line-height: 100px;
+                position: relative;
+
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <h2>horse Game</h2>
+
+        <div id="gameDiv"></div>
+        <button onclick="start(this);">start</button>
+        <button onclick="move();">move</button>
+
+        <script  type="text/javascript">
+            var lengthScreen = 1200;
+            var Horse1 = null;
+            var Horse2 = null;
+            var game = null;
+
+            function Game() {
+                this.cureentStatus = -1;
+                this.horses = null;
+                this.returnToStartPoit = function () {
+                    for (i = 0; i < this.horses.length; i++)
+                    {
+                        this.horses[i].currentPosition = 0;
+                        this.horses[i].btn.style.left = "0px";
+                    }
+                    this.cureentStatus = -1;
+                };
+            }
+            ;
+
+
+
+
+
+            function Horse(btnId, btnTop, parentGameId) {
+                this.parentDiv = parentGameId;
+                this.btnId = btnId;
+                this.btnTop = btnTop;
+                this.currentPosition = 0;
+                this.wins = 0;
+                this.size = 100;
+                this.btn = null;
+                this.initBtn = function () {
+                    this.btn = document.createElement("btn");
+                    this.btn.className = "btn";
+                    this.btn.id = this.btnId;
+                    this.btn.innerHTML = "player " + btnId;
+
+                    this.btn.onclick = function () {
+                        this.startGame(this.btn);
+
+                    };
+                    var btndiv = document.createElement("div");
+                    btndiv.style.top = this.btnTop;
+
+                    var parentDiv = document.getElementById(this.parentDiv);
+                    parentDiv.appendChild(btndiv);
+                    btndiv.appendChild(this.btn);
+
+                };
+
+
+                this.startGame = function () {
+
+                    this.MoveLeft(this.btn);
+                };
+
+                
+
+
+                this.MoveLeft = function (btn) {
+                    this.loop(btn);
+                };
+            }
+            ;
+
+            
+            Horse.prototype.loop = function (btn) {
+                    var context = this;
+                    if (this.currentPosition < lengthScreen-this.size && game.cureentStatus === 1) {
+                        if (btn.style.left.indexOf("px") > -1) {
+                            var corLeft = btn.style.left.substr(0, btn.style.left.indexOf("px")) * 1;
+                            var ran = Math.random() * 10;
+                            btn.style.left = (corLeft + ran) + 'px';
+                            this.currentPosition = corLeft + ran;
+                        } else {
+                            btn.style.left = "20px";
+                            this.currentPosition = 20;
+                        }
+                        setTimeout(function () {
+                            context.loop(btn);
+                        }, Math.random() * 100);
+                    } else if (game.cureentStatus === 1)
+                    {
+                        game.cureentStatus = 2;
+                        this.wins++;
+                        alert("the winer is" + this.btnId);
+                        game.returnToStartPoit();
+
+                    }
+                };
+
+            function Pony(btnId, btnTop, parentGameId) {
+                Horse.call(this, btnId, btnTop, parentGameId);
+            };
+            
+            Pony.prototype = Object.create(Horse.prototype);
+            Pony.prototype.constructor = Pony;
+            Pony.prototype.size = 50;
+            Pony.prototype.loop = function (btn) {
+                var context = this;
+                if (this.currentPosition < lengthScreen-this.size && game.cureentStatus === 1) {
+                    if (btn.style.left.indexOf("px") > -1) {
+                        var corLeft = btn.style.left.substr(0, btn.style.left.indexOf("px")) * 1;
+                        var ran = Math.random() * 104;
+                        btn.style.left = (corLeft + ran) + 'px';
+                        this.currentPosition = corLeft + ran;
+                    } else {
+                        btn.style.left = "20px";
+                        this.currentPosition = 20;
+                    }
+                    setTimeout(function () {
+                        context.loop(btn);
+                    }, Math.random() * 1000);
+                } else if (game.cureentStatus === 1)
+                {
+                    game.cureentStatus = 2;
+                    this.wins++;
+                    alert("the winer is" + this.btnId);
+                    game.returnToStartPoit();
+
+                }
+            };
+
+
+            function start(el) {
+                game = new Game();
+                Horse1 = new Horse("btn1", "0px", "gameDiv");
+                Horse2 = new Pony("btn2", "50px", "gameDiv");
+                game.horses = [Horse1, Horse2];
+                Horse1.initBtn();
+                Horse2.initBtn();
+                el.setAttribute("disabled", true);
+            }
+
+            function move() {
+                game.cureentStatus = 1;
+                Horse2.startGame();
+                Horse1.startGame();
+            }
+        </script>
+    </body>
+</html>
