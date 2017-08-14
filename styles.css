@@ -89,6 +89,11 @@
     background-color: orange;
 }
 
+
+.panic-mode .ghost{
+    background-color: blue;
+}
+
 .resume-game-btn {
     display: none;
 }

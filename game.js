@@ -1,9 +1,10 @@
-var gameLoopInterval;
-var blockSize = 50;
-var gameUpdateSpeed = 400;
-var foodScore = 1;
-var cherryScore = 10;
-
+var gameLoopInterval,
+    blockSize = 50,
+    gameUpdateSpeed = 400,
+    foodScore = 5,
+    cherryScore = 10,
+    panicMode = false,
+    panicModeTimeOut = 4000;
 
 
 var mazeElement = document.querySelector('.maze');
@@ -66,8 +67,6 @@ var cherries = [{
 }];
 
 
-
-
 var mazeWidth = 11;
 var mazeHight = 10;
 
@@ -90,15 +89,10 @@ var maze = JSON.parse(JSON.stringify(initialMaze));
 
 function startGame() {
 
-
-
     initMaze();
     drawMaze(maze);
 
-
-
     gameLoopInterval = setInterval(gameLoop, gameUpdateSpeed);
-
 }
 
 
@@ -144,7 +138,7 @@ var gameLoop = function () {
     drawMaze(maze);
 
     checkGameOver();
-
+    
 }
 
 
@@ -157,12 +151,12 @@ function initMaze() {
 
     //place ghost
     for (ghost of ghosts) {
-        maze[ghost.position.row][ghost.position.col] = ' ghost ' + ghost.name;
+        maze[ghost.position.row][ghost.position.col] += ' ghost ' + ghost.name;
     }
 
     // place cherries
     for (cherry of cherries) {
-        maze[cherry.position.row][cherry.position.col] = 'food cherry';
+        maze[cherry.position.row][cherry.position.col] += ' cherry';
     }
 
 }
@@ -359,8 +353,14 @@ function checkGameOver() {
 
 
 function startPanicMode() {
+    mazeElement.classList.add('panic-mode');
+    panicMode = true;
 
-    console.log('WOW we are in PANIC mode :)');
+    setTimeout(function(){
+        panicMode= false;
+        mazeElement.classList.remove('panic-mode');
+    }, panicModeTimeOut);
+
 }
 
 function pauseGame() {
