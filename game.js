@@ -12,6 +12,7 @@ var pauseGameBtn = document.querySelector('.pause-game-btn');
 var resumeGameBtn = document.querySelector('.resume-game-btn');
 var scoreElement = document.querySelector('.score');
 var gameOverElement = document.querySelector('.game-over');
+var startNewGameBtn = document.querySelector('.start-new-game-btn');
 
 var score = 0;
 
@@ -88,22 +89,13 @@ var maze = JSON.parse(JSON.stringify(initialMaze));
 
 
 function startGame() {
-    //TODO: reset score board
-    maze = JSON.parse(JSON.stringify(initialMaze));
 
-    pacman.position.col = pacman.initialPosition.col;
-    pacman.position.row = pacman.initialPosition.row;
-    pacman.movingDirection = 'stand';
 
-    for (ghost of ghosts) {
-        ghost.position.row = ghost.initialPosition.row;
-        ghost.position.col = ghost.initialPosition.col;
-    }
 
     initMaze();
     drawMaze(maze);
 
-    clearInterval(gameLoopInterval);
+
 
     gameLoopInterval = setInterval(gameLoop, gameUpdateSpeed);
 
@@ -387,10 +379,36 @@ function updateScoreInUi() {
     scoreElement.innerText = score;
 }
 
+function resetGame() {
+    maze = JSON.parse(JSON.stringify(initialMaze));
+
+    pacman.position.col = pacman.initialPosition.col;
+    pacman.position.row = pacman.initialPosition.row;
+    pacman.movingDirection = 'stand';
+
+    for (ghost of ghosts) {
+        ghost.position.row = ghost.initialPosition.row;
+        ghost.position.col = ghost.initialPosition.col;
+    }
+
+    clearInterval(gameLoopInterval);
+
+    gameOverElement.style.display = 'none';
+    score = 0;
+    updateScoreInUi();
+}
+
 
 window.addEventListener('keypress', movePacmanByPres, false);
 
 
-startGameBtn.addEventListener('click', startGame);
+startGameBtn.addEventListener('click', () => {
+    resetGame();
+    startGame();
+});
 pauseGameBtn.addEventListener('click', pauseGame);
 resumeGameBtn.addEventListener('click', resumeGame);
+startNewGameBtn.addEventListener('click', function () {
+    resetGame();
+    startGame();
+});
