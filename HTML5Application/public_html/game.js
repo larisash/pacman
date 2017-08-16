@@ -28,24 +28,28 @@ var pacman = {
 var ghosts = [{
     name: 'blinky',
     initialPosition: { row: 9, col: 7 },
+	firstPosition: { row: 9, col: 7 },
     position: { row: 9, col: 7 },
     movingDirection: 'up'
 },
 {
     name: 'pinky',
     initialPosition: { row: 9, col: 8 },
+	firstPosition: { row: 9, col: 8 },
     position: { row: 9, col: 8 },
     movingDirection: 'left'
 },
 {
     name: 'inky',
     initialPosition: { row: 9, col: 9 },
+	firstPosition: { row: 9, col: 9 },
     position: { row: 9, col: 9 },
     movingDirection: 'right'
 },
 {
     name: 'clyde',
     initialPosition: { row: 9, col: 10 },
+	firstPosition: { row: 9, col: 10 },
     position: { row: 9, col: 10 },
     movingDirection: 'down'
 }];
@@ -340,8 +344,9 @@ function updateGhostMovingDirection(ghost) {
 function checkGameOver() {
 
     for (ghost of ghosts) {
-        if ((pacman.position.row === ghost.position.row) && (pacman.position.col === ghost.position.col)) {//make initGameover function
-            console.log("sorry - game over");
+        if ((panicMode = false)&&
+		   (pacman.position.row === ghost.position.row) && (pacman.position.col === ghost.position.col)) {//make initGameover function
+            
 
             clearInterval(gameLoopInterval);
 
@@ -355,6 +360,16 @@ function checkGameOver() {
 function startPanicMode() {
     mazeElement.classList.add('panic-mode');
     panicMode = true;
+	
+	for (ghost of ghosts) {
+        if ((pacman.position.row === ghost.position.row) && (pacman.position.col === ghost.position.col)) {
+		
+		score = score + 200;
+		updateScoreInUi()
+		ghost.position = ghost.firstPosition;
+		}
+	}
+     
 
     setTimeout(function(){
         panicMode= false;
