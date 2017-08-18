@@ -94,7 +94,7 @@
     background-color: blue;
 }
 .eatn-mode {
-	background-color: darkgray;
+	background-color: darkgray important;
 }
 
 .resume-game-btn {
