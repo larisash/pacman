@@ -356,7 +356,8 @@ function checkGameOver() {
 			}
 			
 			else if (panicMode === true){
-			panicModePacmanEatCherry();	
+			ghostEtenName= ghost.name;
+			panicModePacmanEatCherry(ghostEtenName);	
 				
 			}
 
@@ -384,11 +385,12 @@ function afterPanicMode(){
 	panicMode === false;
 }
 
-function panicModePacmanEatCherry(){
-		
+function panicModePacmanEatCherry(ghostEtenName){
+		var corentEtanGhost = document.querySelector(`.${ghostEtenName}`);
+		console.log(corentEtanGhost);
+		corentEtanGhost.classList.add('eatn-mode');
 		score = score + 200;
 		updateScoreInUi();
-		mazeElement.classList.add('eatn-mode');
 		moveGhost(ghost.position, ghost.initialPosition, maze, ghost);
 		ghost.position = ghost.initialPosition;
        
