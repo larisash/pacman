@@ -93,6 +93,9 @@
 .panic-mode .ghost{
     background-color: blue;
 }
+.eatn-mode .ghost{
+	background-color: darkgray;
+}
 
 .resume-game-btn {
     display: none;
