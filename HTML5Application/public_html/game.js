@@ -5,7 +5,7 @@ var gameLoopInterval,
     cherryScore = 10,
     panicMode = false,
     panicModeTimeOut = 20000;
-
+	
 
 var mazeElement = document.querySelector('.maze');
 var startGameBtn = document.querySelector('.start-game-btn');
@@ -13,9 +13,11 @@ var pauseGameBtn = document.querySelector('.pause-game-btn');
 var resumeGameBtn = document.querySelector('.resume-game-btn');
 var scoreElement = document.querySelector('.score');
 var gameOverElement = document.querySelector('.game-over');
+var winElement = document.querySelector('.you-win');
 var startNewGameBtn = document.querySelector('.start-new-game-btn');
 
 var score = 0;
+var foodAmount = 0;
 
 var pacman = {
     name: 'pacman',
@@ -207,10 +209,12 @@ function movePacman(fromPoint, toPoint, maze) {//move pacman function
 
         if (maze[toPoint.row][toPoint.col] === 'food') {
             score += foodScore;
+			foodAmount += 1;
             updateScoreInUi();
         } else if (maze[toPoint.row][toPoint.col].indexOf('cherry') !== -1) {
             //checks if cherry food
             score += cherryScore;
+			foodAmount += 1;
             updateScoreInUi();
             startPanicMode();
         }
@@ -343,9 +347,14 @@ function updateGhostMovingDirection(ghost) {
 
 function checkGameOver() {
 
+	console.log(foodAmount);
+	if (foodAmount > 55)
+		{
+		winElement.style.display = 'block';
+		}
     for (ghost of ghosts) {
         if ( (pacman.position.row === ghost.position.row)
-		&& (pacman.position.col === ghost.position.col)) {//make initGameover function
+		&& (pacman.position.col === ghost.position.col) ) {//make initGameover function
             
 			if (panicMode === false){
             
@@ -397,7 +406,8 @@ function panicModePacmanEatCherry(ghostEtenName){
 		currGhost.name += ' eatn-mode';
 		
 		console.log(currGhost);
-		score = score + 200;
+		score = score + 200; 
+		foodAmount = foodAmount + 1;
 		updateScoreInUi();
 		moveGhost(ghost.position, ghost.initialPosition, maze, ghost);
 		ghost.position = ghost.initialPosition;
@@ -440,6 +450,7 @@ function resetGame() {
 
     gameOverElement.style.display = 'none';
     score = 0;
+	foodAmount = 0;
     updateScoreInUi();
 }
 
