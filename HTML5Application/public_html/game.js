@@ -192,7 +192,6 @@ function drawMazeBlock(block, leftPos, topPos) {
     blockElement.className = block;
     blockElement.style.top = topPos * blockSize + 'px';
     blockElement.style.left = leftPos * blockSize + 'px';
-
     mazeElement.appendChild(blockElement);
 }
 
@@ -380,15 +379,16 @@ function startPanicMode() {
 }
 
 function afterPanicMode(){
-	mazeElement.classList.remove('eatn-mode');
-    mazeElement.classList.remove('panic-mode');
+	
+	mazeElement.classList.remove('panic-mode');
 	panicMode === false;
 }
 
 function panicModePacmanEatCherry(ghostEtenName){
-		var corentEtanGhost = document.querySelector(`.${ghostEtenName}`);
-		console.log(corentEtanGhost);
-		corentEtanGhost.classList.add('eatn-mode');
+		var currGhost = ghosts.find(ghosts => ghostEtenName === ghosts.name);
+		currGhost.name += ' eatn-mode';
+		
+		console.log(currGhost);
 		score = score + 200;
 		updateScoreInUi();
 		moveGhost(ghost.position, ghost.initialPosition, maze, ghost);
