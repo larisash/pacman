@@ -26,32 +26,30 @@ var pacman = {
 
 
 var ghosts = [{
-	initName: 'blinky',
     name: 'blinky',
     initialPosition: { row: 9, col: 7 },
     position: { row: 9, col: 7 },
     movingDirection: 'up'
 },
 {
-	initName: 'pinky',
     name: 'pinky',
     initialPosition: { row: 9, col: 8 },
     position: { row: 9, col: 8 },
     movingDirection: 'left'
 },
-{	initName: 'inky',
+{
     name: 'inky',
     initialPosition: { row: 9, col: 9 },
     position: { row: 9, col: 9 },
     movingDirection: 'right'
 },
 {	
-	initName: 'clyde',
     name: 'clyde',
     initialPosition: { row: 9, col: 10 },
     position: { row: 9, col: 10 },
     movingDirection: 'down'
 }];
+
 
 var cherries = [{
     position: { row: 0, col: 10 },
@@ -383,13 +381,14 @@ function startPanicMode() {
 
 function afterPanicMode(){
 	panicMode = false;
-	mazeElement.classList.remove('panic-mode');
-	mazeElement.classList.remove('eatn-mode');
 	for (ghost of ghosts){
-	
-		ghost.name = ghost.initName;
 		
+		ghost.name = ghost.name.replace(" eatn-mode"," ");
+		console.log(ghost.name);
+		//ghost.name = ghost.initName;
 	}
+	mazeElement.classList.remove('panic-mode');
+	mazeElement.classList.remove('eatn-mode');	
 	
 }
 
