@@ -93,7 +93,7 @@
 .panic-mode .ghost{
     background-color: blue;
 }
-.eatn-mode {
+.panic-mode .eatn-mode {
 	background-color: darkgray !important;
 }
 
