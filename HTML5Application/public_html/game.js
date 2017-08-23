@@ -3,9 +3,10 @@ var gameLoopInterval,
     gameUpdateSpeed = 400,
     foodScore = 5,
     cherryScore = 10,
+    ghostEatingScore = 200,
     panicMode = false,
     panicModeTimeOut = 20000;
-	
+
 
 var mazeElement = document.querySelector('.maze');
 var startGameBtn = document.querySelector('.start-game-btn');
@@ -17,7 +18,7 @@ var winElement = document.querySelector('.you-win');
 var startNewGameBtn = document.querySelector('.start-new-game-btn');
 
 var score = 0;
-var foodAmount = 0;
+var foodAmount = 93;
 
 var pacman = {
     name: 'pacman',
@@ -31,25 +32,29 @@ var ghosts = [{
     name: 'blinky',
     initialPosition: { row: 9, col: 7 },
     position: { row: 9, col: 7 },
-    movingDirection: 'up'
+    movingDirection: 'up',
+    eaten: false
 },
 {
     name: 'pinky',
     initialPosition: { row: 9, col: 8 },
     position: { row: 9, col: 8 },
-    movingDirection: 'left'
+    movingDirection: 'left',
+    eaten: false
 },
 {
     name: 'inky',
     initialPosition: { row: 9, col: 9 },
     position: { row: 9, col: 9 },
-    movingDirection: 'right'
+    movingDirection: 'right',
+    eaten: false
 },
-{	
+{
     name: 'clyde',
     initialPosition: { row: 9, col: 10 },
     position: { row: 9, col: 10 },
-    movingDirection: 'down'
+    movingDirection: 'down',
+    eaten: false
 }];
 
 
@@ -75,7 +80,7 @@ var mazeHight = 10;
 
 
 var initialMaze = [
-    ['food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food'],
+    ['empty', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food'],
     ['food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'wall horizontal', 'wall horizontal', 'food'],
     ['food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food'],
     ['food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food', 'food'],
@@ -100,26 +105,25 @@ function startGame() {
 
 
 var gameLoop = function () {
+
+
+
+
     //will handel pacman movment 
 
     switch (pacman.movingDirection) {
         case 'right':
             movePacman(pacman.position, { row: pacman.position.row, col: pacman.position.col + 1 }, maze);
-			checkGameOver();
             break;
         case 'left':
             movePacman(pacman.position, { row: pacman.position.row, col: pacman.position.col - 1 }, maze);
-			checkGameOver();
             break;
         case 'down':
             movePacman(pacman.position, { row: pacman.position.row + 1, col: pacman.position.col }, maze);
-			checkGameOver();
             break;
         case 'up':
             movePacman(pacman.position, { row: pacman.position.row - 1, col: pacman.position.col }, maze);
-			checkGameOver();
             break
-
     }
 
     for (ghost of ghosts) {
@@ -127,7 +131,6 @@ var gameLoop = function () {
             case 'right':
                 moveGhost(ghost.position, { row: ghost.position.row, col: ghost.position.col + 1 }, maze, ghost);
                 break;
-
             case 'left':
                 moveGhost(ghost.position, { row: ghost.position.row, col: ghost.position.col - 1 }, maze, ghost);
                 break;
@@ -140,12 +143,65 @@ var gameLoop = function () {
         }
     }
 
-
-
     drawMaze(maze);
 
-    checkGameOver();
-    
+
+
+
+    function checkCollision(ghost) {
+        // check simple state where pacman and ghost on the same cell
+        if (ghost.position.row == pacman.position.row && ghost.position.col == pacman.position.col) {
+            return true;
+        }
+
+        // check if pacman moves right and ghost moves left and they are on the same row distance of 1 col
+        if (pacman.movingDirection === 'right' &&
+            ghost.movingDirection === 'left' &&
+            pacman.position.row === ghost.position.row &&
+            pacman.position.col + 1 === ghost.position.col) {
+            return true;
+        }
+        if (pacman.movingDirection === 'left' &&
+            ghost.movingDirection === 'right' &&
+            pacman.position.row === ghost.position.row &&
+            pacman.position.col - 1 === ghost.position.col) {
+            return true;
+        }
+        if (pacman.movingDirection === 'down' &&
+            ghost.movingDirection === 'up' &&
+            pacman.position.col === ghost.position.col &&
+            pacman.position.row + 1 === ghost.position.row) {
+            return true;
+        }
+        if (pacman.movingDirection === 'up' &&
+            ghost.movingDirection === 'down' &&
+            pacman.position.col === ghost.position.col &&
+            pacman.position.row - 1 === ghost.position.row) {
+            return true;
+        }
+        return false;
+    }
+
+    for (ghost of ghosts) {
+        if (checkCollision(ghost)) {
+            if (panicMode === true) {
+                pacmanAteGhost(ghost);
+            } else {
+                console.log('ghosts Won');
+                gameOverElement.style.display = 'block';
+                clearInterval(gameLoopInterval);
+            }
+        }
+    }
+
+
+    if (foodAmount == 0) {
+        console.log('pacman Won');
+        winElement.style.display = 'block';
+        clearInterval(gameLoopInterval);
+    }
+
+
 }
 
 
@@ -209,12 +265,12 @@ function movePacman(fromPoint, toPoint, maze) {//move pacman function
 
         if (maze[toPoint.row][toPoint.col] === 'food') {
             score += foodScore;
-			foodAmount += 1;
+            foodAmount -= 1;
             updateScoreInUi();
         } else if (maze[toPoint.row][toPoint.col].indexOf('cherry') !== -1) {
             //checks if cherry food
             score += cherryScore;
-			foodAmount += 1;
+            foodAmount -= 1;
             updateScoreInUi();
             startPanicMode();
         }
@@ -254,9 +310,26 @@ function moveGhost(fromPoint, toPoint, maze, ghost) {//move gohst function
         && (maze[toPoint.row][toPoint.col].indexOf('ghost') === -1)) {
 
 
-        maze[toPoint.row][toPoint.col] += ' ghost ' + ghost.name;
         ghost.position = toPoint;
-        maze[fromPoint.row][fromPoint.col] = maze[fromPoint.row][fromPoint.col].replace('ghost ' + ghost.name, '');
+
+        var eaten = '';
+        if (ghost.eaten === true) {
+            eaten = ' eaten';
+        } else {
+            // not eaten ghost
+            // if ((ghost.position.row === pacman.position.row)
+            //     && (ghost.position.col === pacman.position.col)) {
+            //     pacmanAteGhost(ghost);
+            // }
+        }
+
+        maze[toPoint.row][toPoint.col] += ' ghost ' + ghost.name + eaten;
+
+        maze[fromPoint.row][fromPoint.col] = maze[fromPoint.row][fromPoint.col].replace('ghost', '');
+        maze[fromPoint.row][fromPoint.col] = maze[fromPoint.row][fromPoint.col].replace(ghost.name, '');
+        maze[fromPoint.row][fromPoint.col] = maze[fromPoint.row][fromPoint.col].replace(eaten, '');
+        maze[fromPoint.row][fromPoint.col] = maze[fromPoint.row][fromPoint.col].trim();
+
     }
     else {
         updateGhostMovingDirection(ghost);
@@ -278,8 +351,6 @@ function moveGohstByPacmanMovment(gohstPosition) {
         else if (gohstPosition.col < pacman.position.col) {
             GohstMovingDirection = 'right';
         }
-
-
     }
 
     else if (gohstPosition.row < pacman.position.row) {
@@ -292,8 +363,6 @@ function moveGohstByPacmanMovment(gohstPosition) {
         else if (gohstPosition.col < pacman.position.col) {
             GohstMovingDirection = 'right';
         }
-
-
     }
 
     else if (gohstPosition.row === pacman.position.row) {
@@ -316,16 +385,9 @@ function moveGohstByPacmanMovment(gohstPosition) {
             else {
                 updateGhostMovingDirection(ghost);
             }
-
         }
     }
-
-
-
 }
-
-
-
 
 function updateGhostMovingDirection(ghost) {
     var randDirection = Math.floor(4 * Math.random());
@@ -345,78 +407,46 @@ function updateGhostMovingDirection(ghost) {
     }
 }
 
-function checkGameOver() {
-
-	console.log(foodAmount);
-	if (foodAmount > 55)
-		{
-		winElement.style.display = 'block';
-		}
-    for (ghost of ghosts) {
-        if ( (pacman.position.row === ghost.position.row)
-		&& (pacman.position.col === ghost.position.col) ) {//make initGameover function
-            
-			if (panicMode === false){
-            
-
-            clearInterval(gameLoopInterval);
-
-            gameOverElement.style.display = 'block';
-			}
-			
-			else if (panicMode === true){
-			ghostEtenName= ghost.name;
-			panicModePacmanEatCherry(ghostEtenName);	
-				
-			}
-
-        }	
-            
-    }
-}
-
 
 function startPanicMode() {
 
     mazeElement.classList.add('panic-mode');
     panicMode = true;
-	
 
-    setTimeout(function(){
-	afterPanicMode();	
+    setTimeout(function () {
+        afterPanicMode();
     }, panicModeTimeOut);
 
 }
 
-function afterPanicMode(){
-	panicMode = false;
-	for (ghost of ghosts){
-		
-		ghost.name = ghost.name.replace(" eatn-mode"," ");
-		console.log(ghost.name);
-		//ghost.name = ghost.initName;
-	}
-	mazeElement.classList.remove('panic-mode');
-	mazeElement.classList.remove('eatn-mode');	
-	
+function afterPanicMode() {
+    panicMode = false;
+
+    for (ghost of ghosts) {
+        ghost.eaten = false;
+    }
+
+    mazeElement.classList.remove('panic-mode');
 }
 
-function panicModePacmanEatCherry(ghostEtenName){
-		var currGhost = ghosts.find(ghosts => ghostEtenName === ghosts.name);
-		currGhost.name += ' eatn-mode';
-		
-		console.log(currGhost);
-		score = score + 200; 
-		foodAmount = foodAmount + 1;
-		updateScoreInUi();
-		moveGhost(ghost.position, ghost.initialPosition, maze, ghost);
-		ghost.position = ghost.initialPosition;
-       
+function pacmanAteGhost(ghost) {
+    console.log(ghost);
+    ghost.eaten = true;
+    score = score + ghostEatingScore;
 
-		
+
+
+    // maze[ghost.position.row ][ghost.position.col] = maze[ghost.position.row ][ghost.position.col].replace('ghost', '');
+    // maze[ghost.position.row ][ghost.position.col] = maze[ghost.position.row ][ghost.position.col].replace(ghost.name, '');
+    // maze[ghost.position.row ][ghost.position.col] = maze[ghost.position.row ][ghost.position.col].replace('eaten', '');
+    // maze[ghost.position.row ][ghost.position.col] = maze[ghost.position.row ][ghost.position.col].trim();
+
+
+
+    ghost.position.row = ghost.initialPosition.row;
+    ghost.position.col = ghost.initialPosition.col;
+    
 }
-	
-	
 
 function pauseGame() {
     clearInterval(gameLoopInterval);
@@ -450,7 +480,7 @@ function resetGame() {
 
     gameOverElement.style.display = 'none';
     score = 0;
-	foodAmount = 0;
+    foodAmount = 93;
     updateScoreInUi();
 }
 

@@ -93,9 +93,14 @@
 .panic-mode .ghost{
     background-color: blue;
 }
-.panic-mode .eatn-mode {
-	background-color: darkgray !important;
+
+.panic-mode .ghost.eaten {
+    background-color: grey;
 }
+
+/* .panic-mode .eatn-mode {
+	background-color: darkgray !important;
+} */
 
 .resume-game-btn {
     display: none;
